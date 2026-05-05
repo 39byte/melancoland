@@ -1,3 +1,5 @@
+"use client";
+
 import dynamic from "next/dynamic";
 
 const GardenCanvas = dynamic(() => import("@/components/garden/GardenCanvas"), { ssr: false });

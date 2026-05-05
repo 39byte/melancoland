@@ -1,15 +1,13 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { EmotionAnalysis, Season } from "@/engine/types";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY ?? "");
 
 const SYSTEM_PROMPT = `당신은 감정 정원 "Melancoland"의 정원사 AI입니다.
 사용자의 일기를 읽고, 글에서 느껴지는 감정과 분위기를 분석하여
 정원에 심을 식물을 추천합니다.
 
-반드시 아래 JSON 형식으로만 응답하세요:
+반드시 아래 JSON 형식으로만 응답하세요. JSON 외의 텍스트는 절대 포함하지 마세요:
 
 {
   "primaryEmotion": "joy" | "sadness" | "anger" | "fear" | "surprise" | "love" | "peace" | "anxiety" | "hope" | "nostalgia" | "loneliness" | "gratitude" | "excitement" | "melancholy" | "determination",
@@ -53,21 +51,18 @@ const FALLBACK_ANALYSIS: EmotionAnalysis = {
 
 export async function analyzeDiary(content: string): Promise<EmotionAnalysis> {
   try {
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: `오늘의 일기:\n\n${content}`,
-        },
-      ],
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: SYSTEM_PROMPT,
     });
 
-    const text =
-      response.content[0].type === "text" ? response.content[0].text : "";
-    return JSON.parse(text) as EmotionAnalysis;
+    const result = await model.generateContent(`오늘의 일기:\n\n${content}`);
+    const text = result.response.text();
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return FALLBACK_ANALYSIS;
+
+    return JSON.parse(jsonMatch[0]) as EmotionAnalysis;
   } catch {
     return FALLBACK_ANALYSIS;
   }

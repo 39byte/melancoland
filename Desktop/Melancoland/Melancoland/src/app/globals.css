@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #F5F0E8;
+  --bg-secondary: #E8E0D0;
+  --text-primary: #3D3529;
+  --text-secondary: #8B7E6A;
+  --accent: #7FB069;
+  --accent-warm: #E8985E;
+  --garden-sky: #87CEEB;
+  --garden-grass: #7EC850;
+  --garden-dirt: #8B6914;
+  --garden-water: #4A90D9;
+  --night-bg: #1A1A2E;
+  --night-sky: #16213E;
+  --night-star: #E2E2E2;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

@@ -1,0 +1,8 @@
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-level ignores are in Melancoland/.gitignore
